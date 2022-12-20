@@ -9,15 +9,31 @@ from fastapi import FastAPI
 from fastapi import Body, Query, Path
 
 
+# Validaciones de clases
+from pydantic import Field
+from enum import Enum
+class HairColor(Enum):
+    white="White"
+    black="Black"
+    red="Red"
+    blonde="Blonde"
+
+
+
 app=FastAPI()
 
 #models
+class Location(BaseModel):
+    city:str
+    state:str
+    country:str
+
 class Person(BaseModel):
-    firstName:str
-    lastName:str
-    age: int
-    hairColor: Optional[str]="Black"
-    isMarried:Optional[bool]=None
+    firstName:str=Field(...,min_length=1,max_length=50)
+    lastName:str=Field(...,min_length=1,max_length=50)
+    age: int=Field(...,gt=1,le=50)
+    hairColor: Optional[HairColor]=Field(default=None)
+    isMarried:Optional[bool]=Field(default=None)
 
 @app.get("/")
 def home():
@@ -54,4 +70,24 @@ def showPerson(
         title="person_id",
         description="this is the unique person id")
 ):
-    return {person_id:"it exists"}              
+    return {person_id:"it exists"} 
+
+# validaciones request body 
+@app.put("/person/{person_id}")
+def update_person(
+    person_id:int=Path(
+        ...,
+        title="person id",
+        description="This is the unique person id",
+        gt=0
+    ),
+    # aca esta la validacion, el body tiene que ser obligatorio, y el body es de tipo person, que a su vez es un json con los datos de la persona
+    
+    person:Person=Body(...),
+    location:Location=Body(...)
+):
+    # para pasar varios body a la vez lo que hacemos es ponerlos en un diccionario y concatenarlos
+    # eso se hace con el metodo update.  
+    results=person.dict()
+    results.update(location.dict())
+    return results
