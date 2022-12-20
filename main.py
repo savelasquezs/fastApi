@@ -10,8 +10,9 @@ from fastapi import Body, Query, Path
 
 
 # Validaciones de clases
-from pydantic import Field
+from pydantic import Field,EmailStr
 from enum import Enum
+
 class HairColor(Enum):
     white="White"
     black="Black"
@@ -27,6 +28,15 @@ class Location(BaseModel):
     city:str
     state:str
     country:str
+    
+    class Config:
+        schema_extra={
+            "example":{
+                "city":"Medellín",
+                "state":"Antioquia",
+                "country":"Colombia",
+            }
+        }
 
 class Person(BaseModel):
     firstName:str=Field(...,min_length=1,max_length=50)
@@ -34,6 +44,20 @@ class Person(BaseModel):
     age: int=Field(...,gt=1,le=50)
     hairColor: Optional[HairColor]=Field(default=None)
     isMarried:Optional[bool]=Field(default=None)
+    email:EmailStr
+    
+    class Config:
+        schema_extra={
+            "example":{
+                "firstName":"Santiago",
+                "LastName":"velasquez",
+                "age":17,
+                "haircolor":"blonde",
+                "isMarried":True,
+                "email":"santyvano@outlook.com"
+                
+            }
+        }
 
 @app.get("/")
 def home():
