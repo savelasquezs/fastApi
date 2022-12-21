@@ -76,12 +76,14 @@ def showPerson(
         min_length=1,
         max_length=50,
         title="Person name",
+        example="Jorge el curioso",
         description="this is the person description. it is between 1 and 50 characters"
         ),
-    age:str=Query(
+    age:int=Query(
         ...,
         title="Person Age",
-        description="this is the person age. it's required"
+        description="this is the person age. it's required",
+        example=25
         )
 ):
     return {name:age}
@@ -92,7 +94,8 @@ def showPerson(
         ...,
         gt=0,
         title="person_id",
-        description="this is the unique person id")
+        description="this is the unique person id",
+        example=25)
 ):
     return {person_id:"it exists"} 
 
@@ -103,7 +106,8 @@ def update_person(
         ...,
         title="person id",
         description="This is the unique person id",
-        gt=0
+        gt=0,
+        example=58
     ),
     # aca esta la validacion, el body tiene que ser obligatorio, y el body es de tipo person, que a su vez es un json con los datos de la persona
     
